@@ -1,0 +1,101 @@
+/* Calendar custom styles */
+.rbc-calendar {
+    font-family: inherit;
+}
+
+.rbc-header {
+    padding: 12px 6px;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.rbc-month-view {
+    border: 1px solid hsl(var(--border));
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.rbc-month-row {
+    border-color: hsl(var(--border));
+}
+
+.rbc-day-bg {
+    border-color: hsl(var(--border));
+}
+
+.rbc-today {
+    background-color: hsl(var(--accent));
+}
+
+.rbc-off-range-bg {
+    background-color: hsl(var(--muted));
+}
+
+.rbc-date-cell {
+    padding: 6px;
+}
+
+.rbc-button-link {
+    color: hsl(var(--foreground));
+    font-weight: 500;
+}
+
+.rbc-event {
+    padding: 2px 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.rbc-event:focus {
+    outline: 2px solid hsl(var(--ring));
+}
+
+.rbc-toolbar {
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.rbc-toolbar button {
+    padding: 8px 16px;
+    background-color: hsl(var(--background));
+    border: 1px solid hsl(var(--border));
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: hsl(var(--foreground));
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.rbc-toolbar button:hover {
+    background-color: hsl(var(--accent));
+}
+
+.rbc-toolbar button:active,
+.rbc-toolbar button.rbc-active {
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    border-color: hsl(var(--primary));
+}
+
+.rbc-toolbar-label {
+    font-size: 18px;
+    font-weight: 700;
+    color: hsl(var(--foreground));
+}
+
+@media (max-width: 768px) {
+    .rbc-toolbar {
+        flex-direction: column;
+    }
+
+    .rbc-toolbar-label {
+        order: -1;
+        width: 100%;
+        text-align: center;
+    }
+}

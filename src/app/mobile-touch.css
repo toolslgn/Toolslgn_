@@ -1,0 +1,43 @@
+/* Add to your globals.css */
+
+/* Safe area support for devices with notches */
+.safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Touch target optimization - ensure minimum 44x44px */
+.touch-target {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-center;
+}
+
+/* Large touch buttons for mobile */
+.mobile-button {
+    @apply touch-target px-6 py-3 text-base font-medium rounded-lg;
+}
+
+/* Mobile-optimized form inputs */
+@media (max-width: 768px) {
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="tel"],
+    input[type="url"],
+    textarea,
+    select {
+        font-size: 16px !important;
+        /* Prevents zoom on iOS */
+        min-height: 44px;
+    }
+}
+
+/* Smooth scroll for mobile */
+@media (max-width: 768px) {
+    .overflow-y-auto {
+        -webkit-overflow-scrolling: touch;
+    }
+}
