@@ -42,7 +42,7 @@ Used for posting to Facebook and Instagram.
 
 ### 2. Authentication & Admin
 - `NEXT_PUBLIC_APP_URL`: Your production Vercel URL (e.g., `https://toolsliguns.vercel.app`).
-- `ADMIN_EMAIL`: A comma-separated list of admin emails (e.g., `akung@example.com`).
+- `ADMIN_EMAIL`: `Muchamad.guntur04@gmail.com,Muchamad.guntur97@gmail.com,Ligunsentertain@gmail.com`
 
 ### 3. Meta API (Facebook & Instagram)
 - `FACEBOOK_APP_ID`: From Meta Developer Portal.
