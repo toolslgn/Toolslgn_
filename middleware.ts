@@ -1,13 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-// ⚠️ SECURITY: Email whitelist for admin access
-// Replace with your actual admin email(s)
-const ADMIN_EMAILS = [
-    "your-email@example.com",
-    // Add more admin emails here if needed
-];
-
 export async function middleware(request: NextRequest) {
     let response = NextResponse.next({
         request: {
@@ -15,53 +8,46 @@ export async function middleware(request: NextRequest) {
         },
     });
 
-    // Only protect /dashboard routes
-    if (request.nextUrl.pathname.startsWith("/dashboard")) {
-        const supabase = createServerClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-            {
-                cookies: {
-                    getAll() {
-                        return request.cookies.getAll();
-                    },
-                    setAll(cookiesToSet) {
-                        cookiesToSet.forEach(({ name, value, options }) => {
-                            request.cookies.set(name, value);
-                        });
-                        response = NextResponse.next({
-                            request,
-                        });
-                        cookiesToSet.forEach(({ name, value, options }) => {
-                            response.cookies.set(name, value, options);
-                        });
-                    },
+    const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+            cookies: {
+                getAll() {
+                    return request.cookies.getAll();
                 },
-            }
-        );
-
-        // Get user session
-        const {
-            data: { user },
-        } = await supabase.auth.getUser();
-
-        // Not authenticated - redirect to login
-        if (!user) {
-            const redirectUrl = new URL("/login", request.url);
-            redirectUrl.searchParams.set("redirectTo", request.nextUrl.pathname);
-            return NextResponse.redirect(redirectUrl);
+                setAll(cookiesToSet) {
+                    cookiesToSet.forEach(({ name, value, options }) => {
+                        request.cookies.set(name, value);
+                    });
+                    response = NextResponse.next({
+                        request,
+                    });
+                    cookiesToSet.forEach(({ name, value, options }) => {
+                        response.cookies.set(name, value, options);
+                    });
+                },
+            },
         }
+    );
 
-        // Authenticated but email not in whitelist - unauthorized
-        if (!ADMIN_EMAILS.includes(user.email || "")) {
-            // Sign out the user
-            await supabase.auth.signOut();
+    // Refresh session if expired
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
 
-            // Redirect to unauthorized page
-            return NextResponse.redirect(new URL("/unauthorized", request.url));
-        }
+    const path = request.nextUrl.pathname;
 
-        // User is authenticated and whitelisted - allow access
+    // SCENARIO A: User is LOGGED IN
+    // If accessing Root (/) or Login (/login), redirect to /dashboard
+    if (user && (path === "/" || path === "/login")) {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
+
+    // SCENARIO B: User is NOT LOGGED IN
+    // If accessing Protected Routes (/dashboard/*), redirect to Login
+    if (!user && path.startsWith("/dashboard")) {
+        return NextResponse.redirect(new URL("/", request.url));
     }
 
     return response;
@@ -74,8 +60,9 @@ export const config = {
          * - _next/static (static files)
          * - _next/image (image optimization files)
          * - favicon.ico (favicon file)
+         * - auth (auth callback routes)
          * - public folder
          */
-        "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+        "/((?!_next/static|_next/image|favicon.ico|auth|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
     ],
 };
