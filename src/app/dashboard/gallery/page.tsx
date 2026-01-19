@@ -6,15 +6,14 @@ import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 import { Trash2, Image as ImageIcon, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { EmptyGallery } from "@/components/empty-state";
@@ -192,40 +191,35 @@ export default function GalleryPage() {
             )}
 
             {/* Delete Confirmation Dialog */}
-            <AlertDialog
+            <Dialog
                 open={!!deleteImage}
-                onOpenChange={(open) => !open && setDeleteImage(null)}
+                onOpenChange={(open: boolean) => !open && setDeleteImage(null)}
             >
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Image?</AlertDialogTitle>
-                        <AlertDialogDescription>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Delete Image?</DialogTitle>
+                        <DialogDescription>
                             This will permanently delete this image from storage. This action
                             cannot be undone.
                             {deleteImage && (
-                                <div className="mt-4 relative w-full aspect-video rounded-lg overflow-hidden">
-                                    <Image
-                                        src={deleteImage.url}
-                                        alt="Preview"
-                                        fill
-                                        className="object-cover"
-                                    />
+                                <div className="mt-2 rounded-md border p-2 text-xs text-muted-foreground break-all bg-muted/50">
+                                    {deleteImage.name}
                                 </div>
                             )}
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setDeleteImage(null)} disabled={deleting}>Cancel</Button>
+                        <Button
                             onClick={() => deleteImage && handleDelete(deleteImage)}
+                            variant="destructive"
                             disabled={deleting}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         >
                             {deleting ? "Deleting..." : "Delete"}
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
