@@ -57,6 +57,11 @@ const nextConfig = {
                 protocol: 'https',
                 hostname: 'api.telegram.org',
             },
+            // Google
+            {
+                protocol: 'https',
+                hostname: 'lh3.googleusercontent.com',
+            },
         ],
     },
 };

@@ -30,7 +30,6 @@ import type { Website, Account } from "@/types/database";
 import { cn } from "@/lib/utils";
 import { isHoliday } from "@/lib/holidays-2026";
 import { AlertCircle } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 
 // Mock accounts
 const mockAccounts: Account[] = [
@@ -78,6 +77,14 @@ export default function CreatePostPage() {
     const [isGeneratingAI, setIsGeneratingAI] = useState(false);
     const [isEvergreen, setIsEvergreen] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Field-level error state
+    const [errors, setErrors] = useState<{
+        websites?: string;
+        caption?: string;
+        date?: string;
+        accounts?: string;
+    }>({});
 
     // Parse URL params for pre-filled data (holiday posts)
     useEffect(() => {
@@ -139,6 +146,10 @@ export default function CreatePostPage() {
     };
 
     const handleWebsiteToggle = (websiteId: string) => {
+        // Clear website error when user selects
+        if (errors.websites) {
+            setErrors(prev => ({ ...prev, websites: undefined }));
+        }
         setSelectedWebsiteIds((prev) =>
             prev.includes(websiteId)
                 ? prev.filter((id) => id !== websiteId)
@@ -155,31 +166,43 @@ export default function CreatePostPage() {
     };
 
     const handleSchedulePost = async () => {
-        // Validation
+        // Clear previous errors
+        setErrors({});
+
+        // Validation with field-level errors
+        const newErrors: typeof errors = {};
+
         if (selectedWebsiteIds.length === 0) {
+            newErrors.websites = "Please select at least one website";
             toast.error("Please select at least one website");
-            return;
         }
         if (!caption.trim()) {
+            newErrors.caption = "Caption is required";
             toast.error("Please enter a caption");
-            return;
         }
         if (!date) {
+            newErrors.date = "Please select a schedule date";
             toast.error("Please select a date");
-            return;
         }
         if (selectedAccounts.length === 0) {
+            newErrors.accounts = "Please select at least one account";
             toast.error("Please select at least one account");
+        }
+
+        // If there are errors, set them and return
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
             return;
         }
 
         // Combine date and time
         const [hours, minutes] = time.split(":").map(Number);
-        const scheduledDateTime = new Date(date);
+        const scheduledDateTime = new Date(date!);
         scheduledDateTime.setHours(hours, minutes, 0, 0);
 
         if (scheduledDateTime < new Date()) {
             toast.error("Scheduled time cannot be in the past");
+            setErrors({ date: "Scheduled time cannot be in the past" });
             return;
         }
 
@@ -189,7 +212,7 @@ export default function CreatePostPage() {
             const result = await schedulePost({
                 websiteIds: selectedWebsiteIds,
                 caption,
-                imageFile,
+                imageFile: imageFile || undefined,
                 scheduledDate: scheduledDateTime,
                 accountIds: selectedAccounts,
                 isEvergreen,
@@ -289,6 +312,12 @@ export default function CreatePostPage() {
                                     Selected: {selectedWebsiteNames}
                                 </p>
                             )}
+                            {errors.websites && (
+                                <p className="text-sm text-destructive mt-1 flex items-center gap-1">
+                                    <AlertCircle className="h-3 w-3" />
+                                    {errors.websites}
+                                </p>
+                            )}
                         </div>
 
                         {/* Image Upload */}
@@ -341,9 +370,7 @@ export default function CreatePostPage() {
                                 <Label htmlFor="caption">Caption * (Spintax Supported)</Label>
                                 <Button
                                     type="button"
-                                    variant="ghost"
                                     size="sm"
-                                    className="h-6 text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                                     onClick={async () => {
                                         if (selectedWebsiteIds.length === 0) {
                                             toast.error("Select a website first to give AI some context!");
@@ -410,7 +437,13 @@ export default function CreatePostPage() {
                                     id="caption"
                                     placeholder="{Great|Awesome|Amazing} news! Check out our {new|latest} product! Use {brackets|curly braces} for variations."
                                     value={caption}
-                                    onChange={(e) => setCaption(e.target.value)}
+                                    onChange={(e) => {
+                                        setCaption(e.target.value);
+                                        // Clear caption error when user types
+                                        if (errors.caption) {
+                                            setErrors(prev => ({ ...prev, caption: undefined }));
+                                        }
+                                    }}
                                     rows={6}
                                     className="resize-none"
                                 />
@@ -425,6 +458,12 @@ export default function CreatePostPage() {
                                     </span>
                                 </div>
                             </div>
+                            {errors.caption && (
+                                <p className="text-sm text-destructive mt-1 flex items-center gap-1">
+                                    <AlertCircle className="h-3 w-3" />
+                                    {errors.caption}
+                                </p>
+                            )}
                             <p className="text-xs text-muted-foreground">
                                 💡 Use spintax {"{word1|word2}"} to create unique variations for each website
                             </p>
@@ -451,7 +490,13 @@ export default function CreatePostPage() {
                                         <Calendar
                                             mode="single"
                                             selected={date}
-                                            onSelect={setDate}
+                                            onSelect={(newDate) => {
+                                                setDate(newDate);
+                                                // Clear date error when user selects
+                                                if (errors.date) {
+                                                    setErrors(prev => ({ ...prev, date: undefined }));
+                                                }
+                                            }}
                                             disabled={(date) =>
                                                 date < new Date(new Date().setHours(0, 0, 0, 0))
                                             }
@@ -459,20 +504,26 @@ export default function CreatePostPage() {
                                         />
                                     </PopoverContent>
                                 </Popover>
+                                {errors.date && (
+                                    <p className="text-sm text-destructive mt-1 flex items-center gap-1">
+                                        <AlertCircle className="h-3 w-3" />
+                                        {errors.date}
+                                    </p>
+                                )}
 
                                 {/* Holiday Warning */}
                                 {date && (() => {
                                     const holiday = isHoliday(date);
                                     if (holiday) {
                                         return (
-                                            <Alert className="border-orange-500/50 bg-orange-50 dark:bg-orange-950/20">
-                                                <AlertCircle className="h-4 w-4 text-orange-600" />
-                                                <AlertDescription className="text-xs">
+                                            <div className="rounded-lg border border-orange-500/50 bg-orange-50 dark:bg-orange-950/20 p-4 flex gap-3 text-orange-900 dark:text-orange-100">
+                                                <AlertCircle className="h-5 w-5 text-orange-600 shrink-0" />
+                                                <div className="text-sm">
                                                     <strong>Heads up!</strong> This date is{" "}
                                                     <strong>{holiday.name}</strong>. Ensure your content is
                                                     relevant.
-                                                </AlertDescription>
-                                            </Alert>
+                                                </div>
+                                            </div>
                                         );
                                     }
                                     return null;
@@ -524,7 +575,13 @@ export default function CreatePostPage() {
                                         <Checkbox
                                             id={account.id}
                                             checked={selectedAccounts.includes(account.id)}
-                                            onCheckedChange={() => handleAccountToggle(account.id)}
+                                            onCheckedChange={() => {
+                                                handleAccountToggle(account.id);
+                                                // Clear account error when user selects
+                                                if (errors.accounts) {
+                                                    setErrors(prev => ({ ...prev, accounts: undefined }));
+                                                }
+                                            }}
                                         />
                                         <label
                                             htmlFor={account.id}

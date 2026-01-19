@@ -81,7 +81,7 @@ export default async function DashboardPage() {
     const hasExpiringTokens = expiringAccounts && expiringAccounts.length > 0;
 
     return (
-        <div className="space-y-6">
+        <div className="page-container">
             {/* Header */}
             <div>
                 <h2 className="text-3xl font-bold tracking-tight">Dashboard Cockpit</h2>
@@ -123,7 +123,7 @@ export default async function DashboardPage() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Scheduled</CardTitle>
-                        <Clock className="h-4 w-4 text-yellow-500" />
+                        <Clock className="h-4 w-4 text-amber-500" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{stats.scheduled}</div>
@@ -138,7 +138,7 @@ export default async function DashboardPage() {
                         <CardTitle className="text-sm font-medium">
                             Published (This Month)
                         </CardTitle>
-                        <CheckCircle2 className="h-4 w-4 text-green-500" />
+                        <CheckCircle2 className="h-4 w-4 text-emerald-500" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{stats.published}</div>
@@ -151,7 +151,7 @@ export default async function DashboardPage() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Failed</CardTitle>
-                        <XCircle className="h-4 w-4 text-red-500" />
+                        <XCircle className="h-4 w-4 text-rose-500" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{stats.failed}</div>
@@ -244,7 +244,7 @@ export default async function DashboardPage() {
 
             {/* Quick Actions */}
             <div className="grid gap-4 md:grid-cols-2">
-                <Card className="border-primary/20 hover:border-primary/40 transition-colors">
+                <Card className="border-primary/20 hover:border-primary/40 transition-all duration-200 hover:shadow-lg">
                     <CardHeader>
                         <CardTitle className="text-lg">Create New Post</CardTitle>
                     </CardHeader>
@@ -261,7 +261,7 @@ export default async function DashboardPage() {
                     </CardContent>
                 </Card>
 
-                <Card className="border-primary/20 hover:border-primary/40 transition-colors">
+                <Card className="border-primary/20 hover:border-primary/40 transition-all duration-200 hover:shadow-lg">
                     <CardHeader>
                         <CardTitle className="text-lg">View All Schedules</CardTitle>
                     </CardHeader>

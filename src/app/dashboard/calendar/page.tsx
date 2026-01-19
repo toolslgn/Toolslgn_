@@ -24,6 +24,7 @@ import {
 import { CheckCircle2, Clock, XCircle, Calendar as CalendarIcon, Flag, Sparkles } from "lucide-react";
 import Link from "next/link";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import { EmptyCalendar } from "@/components/empty-state";
 
 const localizer = momentLocalizer(moment);
 
@@ -296,11 +297,7 @@ export default function CalendarPage() {
                 /* Mobile: Agenda View */
                 <div className="space-y-4">
                     {sortedDates.length === 0 ? (
-                        <Card>
-                            <CardContent className="pt-6 text-center text-muted-foreground">
-                                No scheduled posts
-                            </CardContent>
-                        </Card>
+                        <EmptyCalendar />
                     ) : (
                         sortedDates.map((dateStr) => {
                             const dateEvents = groupedEvents[dateStr];

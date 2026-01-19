@@ -39,6 +39,7 @@ export interface Website {
     user_id: string;
     name: string;
     url: string;
+    description?: string | null;
     logo_url?: string | null;
     primary_color?: string | null;
     created_at: string;

@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { AddWebsiteDialog } from "./add-website-dialog";
 import type { Website } from "@/types/database";
+import { EmptyWebsites } from "@/components/empty-state";
 
 export default async function WebsitesPage() {
     const supabase = await createClient();
@@ -89,14 +90,7 @@ export default async function WebsitesPage() {
                     ))}
                 </div>
             ) : (
-                <div className="rounded-lg border-2 border-dashed border-border p-12 text-center">
-                    <Globe className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">No websites yet</h3>
-                    <p className="text-muted-foreground mb-4">
-                        Get started by adding your first website to manage.
-                    </p>
-                    <AddWebsiteDialog />
-                </div>
+                <EmptyWebsites />
             )}
         </div>
     );

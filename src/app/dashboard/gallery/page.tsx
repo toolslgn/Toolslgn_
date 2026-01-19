@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Trash2, Image as ImageIcon, Upload } from "lucide-react";
 import { toast } from "sonner";
+import { EmptyGallery } from "@/components/empty-state";
 
 interface GalleryImage {
     name: string;
@@ -112,7 +113,7 @@ export default function GalleryPage() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="page-container">
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
@@ -149,27 +150,13 @@ export default function GalleryPage() {
 
             {/* Gallery Grid */}
             {images.length === 0 ? (
-                <Card>
-                    <CardContent className="py-16 text-center">
-                        <ImageIcon className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-                        <h3 className="text-lg font-semibold mb-2">No images yet</h3>
-                        <p className="text-sm text-muted-foreground mb-4">
-                            Upload your first image to get started
-                        </p>
-                        <Button asChild>
-                            <a href="/dashboard/create">
-                                <Upload className="h-4 w-4 mr-2" />
-                                Upload Image
-                            </a>
-                        </Button>
-                    </CardContent>
-                </Card>
+                <EmptyGallery />
             ) : (
                 <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                     {images.map((image) => (
                         <Card
                             key={image.name}
-                            className="group relative overflow-hidden hover:shadow-lg transition-shadow"
+                            className="group relative overflow-hidden hover:shadow-lg transition-all duration-200"
                         >
                             <div className="aspect-square relative">
                                 <Image
